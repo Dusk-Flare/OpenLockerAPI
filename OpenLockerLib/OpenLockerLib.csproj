@@ -34,5 +34,4 @@
 
 	<Import Project="..\..\SextantHorizon\SextantHorizon.projitems" Label="Shared" />
 
-	<Import Project="..\..\SextantHorizon\SextantHorison.projitems" Label="Shared" />
 </Project>
