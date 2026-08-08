@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using OpenLockerLib.Utils;
 using UnityEngine;
 
@@ -10,19 +11,31 @@ namespace OpenLockerLib
         private static float updateTime = -1f;
 
         private static List<StorageContainer> storages = new();
+
         public static void RefreshLocalStorage(float range = 30f)
         {
-            StorageContainer[] containers = Object.FindObjectsOfType<StorageContainer>();
+            Hooks.containers.RemoveAll(s => s == null);
             Vector3 player = Player.main.transform.position;
-            List<StorageContainer> localStorage = containers.ToList().FindAll(s => Vector3.Distance(player, s.transform.position) <= range);
+            List<StorageContainer> localStorage = Hooks.containers.FindAll(s => Vector3.Distance(player, s.transform.position) <= range);
             storages = localStorage;
+            storages.RemoveAll(s => s == null);
             updateTime = Time.time;
         }
 
         public static int GetLocalPickupCount(TechType type)
         {
-            if (Time.time - updateTime <= 1) RefreshLocalStorage();
-            return storages.Sum(s => s.container.GetCount(type));
+            if (Time.time - updateTime > 1) RefreshLocalStorage();
+            int count = 0;
+            StringBuilder stringBuilder = new();
+            foreach (StorageContainer container in storages)
+            {
+                int current = container.container.GetCount(type);
+                stringBuilder.AppendLine($"Local pickup count for {type} in {container.name}: {current}");
+                count += current;
+            }
+            stringBuilder.AppendLine($"\nTotal local pickup count for {type}: {count}");
+            Plugin.Logger.LogInfo(stringBuilder);
+            return count;
         }
 
         public static List<StorageResource> GetStorageResources(StorageContainer container)
@@ -52,7 +65,7 @@ namespace OpenLockerLib
 
         public static bool ConsumeLocalResource(TechType type, int amount)
         {
-            if (Time.time - updateTime <= 1) RefreshLocalStorage();
+            if (Time.time - updateTime > 1) RefreshLocalStorage();
             if(GetLocalPickupCount(type) < amount) return false;
             foreach(StorageContainer container in storages)
             {
@@ -84,8 +97,13 @@ namespace OpenLockerLib
                     removal.Container.container.RemoveItem(pickupable, false);
                     resource -= 1;
                 }
+                if (resource > 0)
+                {
+                    Plugin.Logger.LogWarning($"Not enough {removal.Type} in {removal.Container.name} to consume {removal.Amount}. Remaining: {resource.Amount}");
+                    return false;
+                }
             }
-            return resources.All(r => r.Resource.Amount <= 0);
+            return true; // resources.All(r => r.Resource.Amount <= 0);
         }
     }
 }

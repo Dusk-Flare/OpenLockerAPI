@@ -6,7 +6,7 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
-namespace OpenLockerLib.Utils
+namespace OpenLockerLib
 {
     public static class Compatibility
     {

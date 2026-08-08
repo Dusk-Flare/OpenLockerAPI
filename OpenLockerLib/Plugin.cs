@@ -1,5 +1,5 @@
 ﻿using BepInEx;
-using OpenLockerLib.Utils;
+using SextantHorison.Utils;
 using HarmonyLib;
 using System.Reflection;
 
@@ -16,7 +16,7 @@ namespace OpenLockerLib
         {
             // plugin startup logic
             Logger = new Mercury(PluginInfo.PLUGIN_NAME);
-
+            Resources.ResourceCount = Compatibility.ResourceCount;
             // register harmony patches, if there are any
             Harmony.CreateAndPatchAll(Assembly, $"{PluginInfo.PLUGIN_GUID}");
             Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
