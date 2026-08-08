@@ -1,4 +1,4 @@
 <Solution>
-  <Project Path="../SextantHorison/SextantHorison.shproj" Id="16ce57f8-c36f-4799-8bba-5e0dbc47ce72" />
+  <Project Path="../SextantHorizon/SextantHorizon.shproj" Id="16ce57f8-c36f-4799-8bba-5e0dbc47ce72" />
   <Project Path="OpenLockerLib/OpenLockerLib.csproj" />
 </Solution>

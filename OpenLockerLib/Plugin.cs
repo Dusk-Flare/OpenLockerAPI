@@ -1,5 +1,5 @@
 ﻿using BepInEx;
-using SextantHorison.Utils;
+using SextantHorizon.Utils;
 using HarmonyLib;
 using System.Reflection;
 
