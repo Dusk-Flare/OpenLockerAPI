@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using OpenLockerLib.Utils;
+using SextantHorizon.Utils;
 using UnityEngine;
 
 namespace OpenLockerLib
@@ -16,9 +16,9 @@ namespace OpenLockerLib
         {
             Hooks.containers.RemoveAll(s => s == null);
             Vector3 player = Player.main.transform.position;
-            List<StorageContainer> localStorage = Hooks.containers.FindAll(s => Vector3.Distance(player, s.transform.position) <= range);
+            List<StorageContainer> localStorage = Hooks.containers.FindAll(s => (s != null) && (Vector3.Distance(player, s.transform.position) <= range));
             storages = localStorage;
-            storages.RemoveAll(s => s == null);
+            Plugin.Logger.LogInfo($"Refreshed local storage. Found {storages.Count} storage containers within {range} meters, from the list of {Hooks.containers.Count}.");
             updateTime = Time.time;
         }
 

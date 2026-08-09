@@ -11,6 +11,7 @@ namespace OpenLockerLib
     internal class Hooks
     {
         public static List<StorageContainer> containers = new();
+
         [HarmonyPatch(typeof(StorageContainer))]
         [HarmonyPatch(nameof(StorageContainer.Awake))]
         [HarmonyPostfix]
