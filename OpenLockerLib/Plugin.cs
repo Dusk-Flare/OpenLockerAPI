@@ -2,8 +2,9 @@
 using SextantHorizon.Utils;
 using HarmonyLib;
 using System.Reflection;
+using SextantHorizon;
 
-namespace OpenLockerLib
+namespace OpenLockerAPI
 {
     [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
     public class Plugin : BaseUnityPlugin
@@ -16,7 +17,7 @@ namespace OpenLockerLib
         {
             // plugin startup logic
             Logger = new Mercury(PluginInfo.PLUGIN_NAME);
-            Resources.ResourceCount = Compatibility.ResourceCount;
+            Gateway.Awake(Logger);
             // register harmony patches, if there are any
             Harmony.CreateAndPatchAll(Assembly, $"{PluginInfo.PLUGIN_GUID}");
             Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");

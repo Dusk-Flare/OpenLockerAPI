@@ -2,11 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
-    <AssemblyName>OpenLockerLib</AssemblyName>
+    <AssemblyName>OpenLockerAPI</AssemblyName>
     <Version>0.1.0</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>11</LangVersion>
-    <RootNamespace>OpenLockerLib</RootNamespace>
+    <RootNamespace>OpenLockerAPI</RootNamespace>
     
     <RestoreAdditionalProjectSources>
       https://api.nuget.org/v3/index.json;

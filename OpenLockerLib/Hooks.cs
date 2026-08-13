@@ -1,11 +1,7 @@
 ﻿using HarmonyLib;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace OpenLockerLib
+namespace OpenLockerAPI
 {
     [HarmonyPatch]
     internal class Hooks
