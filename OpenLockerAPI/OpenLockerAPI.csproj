@@ -5,7 +5,7 @@
     <AssemblyName>OpenLockerAPI</AssemblyName>
     <Version>0.1.0</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <LangVersion>11</LangVersion>
+    <LangVersion>14</LangVersion>
     <RootNamespace>OpenLockerAPI</RootNamespace>
     
     <RestoreAdditionalProjectSources>
@@ -29,7 +29,7 @@
   </ItemGroup>
 
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-		<Exec Command="mkdir &quot;C:\Program Files (x86)\Steam\steamapps\common\Subnautica\BepInEx\plugins\$(TargetName)&quot;&#xD;&#xA;copy /Y &quot;$(TargetPath)&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Subnautica\BepInEx\plugins\$(TargetName)&quot;" />
+		<Exec Command="mkdir &quot;C:\Program Files (x86)\Steam\steamapps\common\Subnautica\BepInEx\plugins\$(TargetName)&quot;&#xD;&#xA;copy /Y &quot;$(TargetPath)&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Subnautica\BepInEx\plugins\$(TargetName)&quot;&#xD;&#xA;mkdir &quot;C:\Users\redst\source\externalDLLs\$(TargetName)&quot;&#xD;&#xA;copy /Y &quot;$(TargetPath)&quot; &quot;C:\Users\redst\source\externalDLLs\$(TargetName)&quot;" />
 	</Target>
 
 	<Import Project="..\..\SextantHorizon\SextantHorizon.projitems" Label="Shared" />

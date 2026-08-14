@@ -9,27 +9,27 @@ namespace OpenLockerAPI
     {
         private static float updateTime = -1f;
 
-        private static List<StorageContainer> storages = new();
+        private static List<StorageContainer> storages = [];
 
-        public static void RefreshLocalStorage(float range)
+        public static void RefreshLocalStorage(float range, Vector3? searchOrigin)
         {
             Hooks.containers.RemoveAll(s => s == null);
-            Vector3 player = Player.main.transform.position;
-            List<StorageContainer> localStorage = Hooks.containers.FindAll(s => (s != null) && (Vector3.Distance(player, s.transform.position) <= range));
+            Vector3 origin = searchOrigin ?? Player.main.transform.position;
+            List<StorageContainer> localStorage = Hooks.containers.FindAll(s => (s != null) && (Vector3.Distance(origin, s.transform.position) <= range));
             storages = localStorage;
             updateTime = Time.time;
         }
 
-        public static int GetLocalPickupCount(TechType type, float range = 30f)
+        public static int GetLocalPickupCount(TechType type, Vector3? searchOrigin = null, float range = 30f)
         {
-            if (Time.time - updateTime > 1) RefreshLocalStorage(range);
+            if (Time.time - updateTime > 1) RefreshLocalStorage(range, searchOrigin);
             int count = storages.Sum(s => s.container.GetCount(type));
             return count;
         }
 
         public static List<StorageResource> GetStorageResources(StorageContainer container)
         {
-            List<StorageResource> resources = new();
+            List<StorageResource> resources = [];
             foreach (TechType type in container.container.GetItemTypes())
             {
                 resources.Add(new StorageResource(container, type));
@@ -39,7 +39,7 @@ namespace OpenLockerAPI
 
         public static List<StorageResource> GetAllStorageResources()
         {
-            List<StorageResource> resources = new();
+            List<StorageResource> resources = [];
             foreach (StorageContainer container in storages)
             {
                 List<StorageResource> containerResources = GetStorageResources(container);
@@ -52,9 +52,9 @@ namespace OpenLockerAPI
             return resources;
         }
 
-        public static bool ConsumeLocalResource(TechType type, int amount, float range = 30f)
+        public static bool ConsumeLocalResource(TechType type, int amount, Vector3? searchOrigin = null, float range = 30f)
         {
-            if(GetLocalPickupCount(type, range) < amount) return false;
+            if(GetLocalPickupCount(type, searchOrigin, range) < amount) return false;
             foreach(StorageContainer container in storages)
             {
                 if(amount <= 0) break;
@@ -65,17 +65,62 @@ namespace OpenLockerAPI
             return amount <= 0;
         }
 
+        public static bool HasRoomForLocalResource(InventoryItem resource, Vector3? searchOrigin = null, float range = 30f) => HasRoomForLocalResource(resource.item, searchOrigin, range);
+        public static bool HasRoomForLocalResource(Pickupable resource, Vector3? searchOrigin = null, float range = 30f)
+        {
+            if (Time.time - updateTime > 1) RefreshLocalStorage(range, searchOrigin);
+            return storages.Any(s => s.container.HasRoomFor(resource));
+        }
+        public static bool HasRoomForLocalResource(TechType type, Vector3? searchOrigin = null, float range = 30f)
+        {
+            if (Time.time - updateTime > 1) RefreshLocalStorage(range, searchOrigin);
+            return storages.Any(s => s.container.HasRoomFor(type));
+        }
+        public static bool HasRoomForLocalResource(int x, int y, Vector3? searchOrigin = null, float range = 30f)
+        {
+            if (Time.time - updateTime > 1) RefreshLocalStorage(range, searchOrigin);
+            return storages.Any(s => s.container.HasRoomFor(x, y));
+        }
+        public static bool HasRoomForLocalResource(List<Vector2int> sizes, Vector3? searchOrigin = null, float range = 30f)
+        {
+            if (Time.time - updateTime > 1) RefreshLocalStorage(range, searchOrigin);
+            return storages.Any(s => s.container.HasRoomFor(sizes));
+        }
+
+
+        public static bool DepositLocalResource(InventoryItem resource, Vector3? searchOrigin = null, float range = 30f)
+        {
+            if (Time.time - updateTime > 1) RefreshLocalStorage(range, searchOrigin);
+            foreach (StorageContainer container in storages)
+            {
+                if (((IItemsContainer)container.container).AddItem(resource)) return true;
+            }
+            return false;
+        }
+        public static bool DepositLocalResources(IList<InventoryItem> resources, Vector3? searchOrigin = null, float range = 30f)
+        {
+            if (Time.time - updateTime > 1) RefreshLocalStorage(range, searchOrigin);
+            while(resources.Count > 0)
+            {
+                foreach (InventoryItem item in resources)
+                {
+                    if(!storages.Any(s => ((IItemsContainer)s.container).AddItem(item))) return false;
+                }
+            }
+            return true;
+        }
+
         public static bool ConsumeResource(StorageContainer container, TechType type, int amount) => ConsumeResources(new List<StorageResource> { new(container, new Resource(type, amount)) });
 
         public static bool ConsumeResources(List<(StorageContainer container, TechType type, int amount)> resourceList) => ConsumeResources(resourceList.Select(r => new StorageResource(r.container, new Resource(r.type, r.amount))).ToList());
 
-        public static bool ConsumeResource(StorageResource resource) => ConsumeResources(new List<StorageResource> { resource });
+        public static bool ConsumeResource(StorageResource resource) => ConsumeResources([resource]);
 
         public static bool ConsumeResources(List<StorageResource> resources)
         {
             foreach (StorageResource removal in resources)
             {
-                List<InventoryItem> items = removal.Container.container.GetItems(removal.Type).ToList();
+                List<InventoryItem> items = [.. removal.Container.container.GetItems(removal.Type)];
                 Resource resource = removal.Resource;
                 foreach (InventoryItem item in items)
                 {
