@@ -1,0 +1,14 @@
+{
+  "thumbnail": "OpenLockerAPI.png",
+
+  "install": {
+    "path": "BepInEx/plugins"
+  },
+
+  "links": [
+    {
+      "label": "Nexus",
+      "url": "https://www.nexusmods.com/subnautica/mods/4094"
+    }
+  ]
+}
