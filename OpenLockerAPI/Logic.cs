@@ -64,7 +64,12 @@ namespace OpenLockerAPI
             }
             return amount <= 0;
         }
-
+        public static bool AddResource(this StorageContainer container, InventoryItem resource) => ((IItemsContainer)container.container).AddItem(resource);
+        public static bool HasRoomForResource(this StorageContainer container, TechType type) => container.container.HasRoomFor(type);
+        public static bool HasRoomForResource(this StorageContainer container, Pickupable resource) => container.container.HasRoomFor(resource);
+        public static bool HasRoomForResource(this StorageContainer container, int x, int y) => container.container.HasRoomFor(x, y);
+        public static bool HasRoomForResource(this StorageContainer container, List<Vector2int> sizes) => container.container.HasRoomFor(sizes);
+        public static bool HasRoomForResource(this StorageContainer container, InventoryItem resource) => container.container.HasRoomFor(resource.techType);
         public static bool HasRoomForLocalResource(InventoryItem resource, Vector3? searchOrigin = null, float range = 30f) => HasRoomForLocalResource(resource.item, searchOrigin, range);
         public static bool HasRoomForLocalResource(Pickupable resource, Vector3? searchOrigin = null, float range = 30f)
         {
@@ -91,20 +96,16 @@ namespace OpenLockerAPI
         public static bool DepositLocalResource(InventoryItem resource, Vector3? searchOrigin = null, float range = 30f)
         {
             if (Time.time - updateTime > 1) RefreshLocalStorage(range, searchOrigin);
-            foreach (StorageContainer container in storages)
-            {
-                if (((IItemsContainer)container.container).AddItem(resource)) return true;
-            }
-            return false;
+            return storages.Any(s => s.HasRoomForResource(resource) && s.AddResource(resource));
         }
         public static bool DepositLocalResources(IList<InventoryItem> resources, Vector3? searchOrigin = null, float range = 30f)
         {
             if (Time.time - updateTime > 1) RefreshLocalStorage(range, searchOrigin);
             while(resources.Count > 0)
             {
-                foreach (InventoryItem item in resources)
+                foreach (InventoryItem resource in resources)
                 {
-                    if(!storages.Any(s => ((IItemsContainer)s.container).AddItem(item))) return false;
+                    if(!storages.Any(s => s.HasRoomForResource(resource) && s.AddResource(resource))) return false;
                 }
             }
             return true;

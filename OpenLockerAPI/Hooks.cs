@@ -6,7 +6,7 @@ namespace OpenLockerAPI
     [HarmonyPatch]
     internal class Hooks
     {
-        public static List<StorageContainer> containers = new();
+        public static List<StorageContainer> containers = [];
 
         [HarmonyPatch(typeof(StorageContainer))]
         [HarmonyPatch(nameof(StorageContainer.Awake))]
